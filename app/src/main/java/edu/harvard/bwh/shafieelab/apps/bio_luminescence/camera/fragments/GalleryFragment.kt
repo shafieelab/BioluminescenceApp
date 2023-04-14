@@ -16,6 +16,7 @@
 
 package edu.harvard.bwh.shafieelab.apps.bio_luminescence.camera.fragments
 
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import java.io.File
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.MediaScannerConnection
 import android.os.Build
 //import edu.harvard.bwh.shafieelab.apps.bio_luminescence.BuildConfig
@@ -95,7 +97,21 @@ class GalleryFragment internal constructor() : Fragment() {
             fragmentGalleryBinding.deleteButton.isEnabled = false
             fragmentGalleryBinding.shareButton.isEnabled = false
         }
-        fragmentGalleryBinding.textGallery.text = "Intensity: " + brightnesss
+
+        val prefs: SharedPreferences = requireActivity().getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE)
+        val threshold_val =prefs.getFloat("threshold", 0.0F) //"No name defined" is the default value.
+
+        var pos_neg = "None"
+        if (brightnesss.toFloat() > threshold_val) {
+            pos_neg = "Positive"
+        }
+        else {
+            pos_neg = "Negative"
+}
+
+        fragmentGalleryBinding.textGallery.text = "Intensity: " + brightnesss + "\n Sample is $pos_neg"
+
+
 
         // Populate the ViewPager and implement a cache of two media items
         fragmentGalleryBinding.photoViewPager.apply {

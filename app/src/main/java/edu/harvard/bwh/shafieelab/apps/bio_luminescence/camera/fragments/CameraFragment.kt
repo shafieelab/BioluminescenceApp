@@ -18,6 +18,7 @@ package edu.harvard.bwh.shafieelab.apps.bio_luminescence.camera.fragments
 
 import android.annotation.SuppressLint
 import android.content.*
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -62,7 +63,8 @@ class CameraFragment : Fragment() {
     private val fragmentCameraBinding get() = _fragmentCameraBinding!!
 
 //    private var cameraUiContainerBinding: CameraUiContainerBinding? = null
-private val BASE_URL = "http://raspberrypi:5000"
+//private val BASE_URL = "http://raspberrypi:5000"
+private lateinit var BASE_URL:String;
 
     private lateinit var outputDirectory: File
     private lateinit var currentDate:String
@@ -120,6 +122,13 @@ private val BASE_URL = "http://raspberrypi:5000"
     ): View {
         sharedPref = activity?.getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE)!!
 
+        val prefs: SharedPreferences = requireActivity().getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE)
+        val ip =
+            prefs.getString("ip", "raspberrypi") //"No name defined" is the default value.
+
+        BASE_URL = "http://$ip:5000"
+
+        Toast.makeText(requireActivity().applicationContext, BASE_URL, Toast.LENGTH_LONG).show()
 
         val date = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
@@ -262,6 +271,7 @@ private val BASE_URL = "http://raspberrypi:5000"
                     else if ("Brightness:" in response_val){
 
                        brightness = response_val.replace("Brightness:","")
+
                         downloadImage()
                     }
                 }

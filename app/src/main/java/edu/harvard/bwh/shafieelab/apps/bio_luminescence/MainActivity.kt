@@ -2,20 +2,22 @@ package edu.harvard.bwh.shafieelab.apps.bio_luminescence
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import com.permissionx.guolindev.PermissionX
 import edu.harvard.bwh.shafieelab.apps.bio_luminescence.camera.MainCameraActivity
 import edu.harvard.bwh.shafieelab.apps.bio_luminescence.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,10 +38,63 @@ class MainActivity : AppCompatActivity() {
 //                .setAnchorView(R.id.fab)
 //                .setAction("Action", null).show()
 
+
+
             val intent = Intent(this, MainCameraActivity::class.java)
             startActivity(intent)
             finish()
         }
+
+
+        val prefs: SharedPreferences = getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE)
+        val ip =
+            prefs.getString("ip", "raspberrypi") //"No name defined" is the default value.
+
+        val threshold_val =prefs.getFloat("threshold", 0.0F) //"No name defined" is the default value.
+
+        binding.ipAddress.text = Editable.Factory.getInstance().newEditable(ip)
+        binding.ipAddress.addTextChangedListener(
+            afterTextChanged = {
+                val editor = getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE).edit()
+                editor.putString("ip", binding.ipAddress.text.toString() )
+                editor.apply()
+
+            },
+//            onTextChanged = {s, start, before, count->
+//                TODO("DO your code")
+//            },
+//            beforeTextChanged = {s, start, before, count->
+//                TODO("DO your code")
+//            }
+        )
+
+
+        binding.threshold.text = Editable.Factory.getInstance().newEditable(threshold_val.toString())
+        binding.threshold.addTextChangedListener(
+            afterTextChanged = {
+
+                try{
+
+                    val editor = getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE).edit()
+                    editor.putFloat("threshold", binding.threshold.text.toString().toFloat() )
+                    editor.apply()
+
+
+                }
+                catch (e:Exception){
+                    print(e)
+
+        }
+
+
+            },
+//            onTextChanged = {s, start, before, count->
+//                TODO("DO your code")
+//            },
+//            beforeTextChanged = {s, start, before, count->
+//                TODO("DO your code")
+//            }
+        )
 
 
         PermissionX.init(this)
